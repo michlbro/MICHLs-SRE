@@ -1,3 +1,0 @@
-local directIllumination = {}
-
-return directIllumination
