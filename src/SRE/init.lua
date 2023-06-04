@@ -20,6 +20,9 @@ local SRE = {}
 
 -- // Raytracing Pipeline
 function SRE:Render()
+    -- Setup ray tracing pipeline
+    
+
     -- Scene Setup
     local sceneSetup = RayTracingPipeline.SceneSetup(self.scene)
 

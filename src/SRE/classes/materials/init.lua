@@ -6,6 +6,10 @@ function materials:GetMaterial(materialName)
     return self.materials[materialName] or self.materials.None
 end
 
+function materials:DumpMaterials()
+    return self.materials
+end
+
 local function new(arrayOfMaterials)
     local self = {}
     self.materials = {

@@ -1,4 +1,4 @@
-local Pixel = require(script.pixel)
+local Element = require(script.element)
 
 local Buffer = {}
 
@@ -24,7 +24,7 @@ local function new(size, bufferDataType, start)
     for x = start.X, size.X - 1 do
         self.buffer[x] = {}
         for y = start.Y, size.Y - 1 do
-            self.buffer[x][y] = Pixel.new(Vector2.new(x, y), bufferDataType)
+            self.buffer[x][y] = Element.new(Vector2.new(x, y), bufferDataType)
             self.size += 1
         end
     end

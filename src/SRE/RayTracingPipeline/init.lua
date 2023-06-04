@@ -50,4 +50,24 @@ function srePipeline.DirectIllumination(sceneSetup, raycastBuffer, directIllumin
     end
 end
 
+function srepipeline.DirectIlluminationV2(rt, raycastBuffer, directIlluminationBuffer)
+    local directillumination = require(script.directillumination)
+
+    for x, yCols in raycastBuffer.buffer do
+        for y, rayResult in yCols do
+            if not rayResult.intersected then
+                continue
+            end
+            local directIlluminated,  = directillumination(rt, rayResult.result)
+            directIlluminationBuffer.buffer[x][y].directlyIlluminated = directLight
+            directIlluminationBuffer.buffer[x][y].colour = finalColour
+        end
+    end
+end
+
+function srePipeline.RayTraceSetup(sre)
+    local rayTraceSetup = require(script.raytracesetup)
+    return raytracesetup(sre.scene, sre.camera, sre.raycast, sre.materials)
+end
+
 return srePipeline
