@@ -1,7 +1,8 @@
 local material = {}
 
 local defaultMaterials = {
-    lightIntensity = 0
+    LightIntensity = 0,
+    Smoothness = 0
 }
 
 local function new(name, properties)

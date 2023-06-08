@@ -9,14 +9,14 @@ local sre = {}
 function sre:Render()
     local pixels = PipelineSRE.Render(self.scene, self.materials, self.camera)
 
-    local origin = workspace.CurrentCamera.CFrame.Position
+    local origin = workspace.CurrentCamera.CFrame.Position + Vector3.new(0, 0, 10)
     local size = 0.01
     local screen = Instance.new("Model")
     for x, cols in pixels do
         for y, colour in cols do
             local pixel = Instance.new("Part")
             pixel.Size = Vector3.one * size
-            pixel.Position = origin + Vector3.new((x-1) * size, (y-1) * size)
+            pixel.Position = origin + Vector3.new((#pixels - (x-1)) * size, (y-1) * size)
             pixel.Color = Color3.new(colour.X, colour.Y, colour.Z)
             pixel.Anchored = true
             pixel.CanCollide = false

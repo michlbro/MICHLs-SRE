@@ -1,8 +1,7 @@
 local setup = {}
 
-function setup.GetMaterialFunction(materials)
-    local materials = materials:DumpMaterials()
-    print(materials)
+function setup.GetMaterialFunction(materialsObj)
+    local materials = materialsObj:DumpMaterials()
     return function(instance)
         local material = {}
         material.colour = instance.Color
@@ -45,6 +44,11 @@ function setup.Color3ToVector3(color3)
     return Vector3.new(color3.R, color3.G, color3.B)
 end
 
+function setup.ClampVector(vector3, min, max)
+    local x, y, z = math.clamp(vector3.X, min, max), math.clamp(vector3.Y, min, max), math.clamp(vector3.Z, min, max)
+    return Vector3.new(x, y, z)
+end
+
 function setup.SetupPipeline(scene, materials, camera)
     local config = {}
 
@@ -52,8 +56,13 @@ function setup.SetupPipeline(scene, materials, camera)
     config.ray = setup.Ray(scene, camera)
     config.camera = camera
     config.Color3ToVector3 = setup.Color3ToVector3
-    config.MaxBounce = 2
-    config.MaxRays = 100
+    config.ClampVector = setup.ClampVector
+    config.scene = {}
+    
+    for property, value in scene.sceneProperties do
+        print("FG")
+        config.scene[property] = value
+    end
 
     return config
 end

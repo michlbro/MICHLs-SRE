@@ -7,12 +7,10 @@ function pipeline.Render(scene, materials, camera)
     local config = PipelineSetup.SetupPipeline(scene, materials, camera)
     local pixelScreen = {}
 
-    local bottomLeftLocal = Vector3.new(-camera.size.X/2, -camera.size.Y/2, 300)
+    local bottomLeftLocal = Vector3.new(-camera.size.X/2, -camera.size.Y/2, camera.focalLength)
 
     for x = 0, camera.size.X do
         pixelScreen[x] = {}
-        task.wait()
-        print("Running")
         for y = 0, camera.size.Y do
             pixelScreen[x][y] = Vector3.zero
             local pixel = {}
