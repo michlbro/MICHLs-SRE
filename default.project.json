@@ -1,7 +1,12 @@
 {
     "name": "MICHLs-Rendering-System",
     "tree": {
-        "$className": "Model",
-        "$path": "src"
+        "$className": "DataModel",
+        "Workspace": {
+            "SRE":{
+                "$className": "Model",
+                "$path": "src"
+            }
+        }
     }
 }

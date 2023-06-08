@@ -1,67 +1,48 @@
---[[
-    SRE - Software Raytracing Engine
-    Made by XxprofessgamerxX
-    Created on 04/06/2023
-]]
+local PipelineSRE = require(script.pipeline)
 
--- // Variables
-local classes = script.classes
+local Scene = require(script.properties.scene)
+local Materials = require(script.properties.materials)
+local Camera = require(script.properties.camera)
 
-local SceneClass = require(classes.scene)
-local ImageClass = require(classes.image)
-local CameraClass = require(classes.camera)
-local RaycastClass = require(classes.raycast)
-local BufferClass = require(classes.buffer)
-local MaterialsClass = require(classes.materials)
+local sre = {}
 
-local RayTracingPipeline = require(script.RayTracingPipeline)
+function sre:Render()
+    local pixels = PipelineSRE.Render(self.scene, self.materials, self.camera)
 
-local SRE = {}
-
--- // Raytracing Pipeline
-function SRE:Render()
-    -- Setup ray tracing pipeline
-    
-
-    -- Scene Setup
-    local sceneSetup = RayTracingPipeline.SceneSetup(self.scene)
-
-    -- Camera Projection
-    -- Determine if pixel intersects or not
-    local raycastBuffer = BufferClass.new(self.camera.size, {result = nil, intersected = false})
-    RayTracingPipeline.CameraProjection(sceneSetup,self.camera, self.raycast, raycastBuffer)
-
-    -- Calculate direct lighting illumination
-    -- Only for pixels that have an intersection.
-    local directIlluminationBuffer = BufferClass.new(self.camera.size, {colour = Vector3.zero, directlyIlluminated = false})
-    RayTracingPipeline.DirectIllumination(sceneSetup, raycastBuffer, directIlluminationBuffer, self.camera, self.scene, self.materials)
+    local origin = workspace.CurrentCamera.CFrame.Position
+    local size = 0.01
+    local screen = Instance.new("Model")
+    for x, cols in pixels do
+        for y, colour in cols do
+            local pixel = Instance.new("Part")
+            pixel.Size = Vector3.one * size
+            pixel.Position = origin + Vector3.new((x-1) * size, (y-1) * size)
+            pixel.Color = Color3.new(colour.X, colour.Y, colour.Z)
+            pixel.Anchored = true
+            pixel.CanCollide = false
+            pixel.Parent = screen
+        end
+    end
+    screen.Parent = workspace
 end
 
--- // Image Rendering
 
--- // functions
-
-local function new(sceneObj, materialsObj, imageObj, cameraObj, raycastObj)
+local function new(scene, materials, camera, screen)
     local self = {}
-    self.scene = sceneObj or SceneClass.new()
-    self.image = imageObj or ImageClass.new()
-    self.camera = cameraObj or CameraClass.new()
-    self.raycast = raycastObj or RaycastClass.new()
-    self.materials = materialsObj or MaterialsClass.new()
-
+    self.scene = scene
+    self.materials = materials
+    self.camera = camera
+    self.screen = screen
 
     setmetatable(self, {
-        __index = SRE
+        __index = sre
     })
+    return self
 end
 
 return setmetatable({
     new = new,
-    SceneClass = SceneClass,
-    ImageClass = ImageClass,
-    CameraClass = CameraClass,
-    RaycastClass = RaycastClass,
-    MaterialsClass = MaterialsClass
-}, {
-
-})
+    Scene = Scene,
+    Camera = Camera,
+    Materials = Materials
+}, {})
