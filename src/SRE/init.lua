@@ -1,38 +1,34 @@
-local PipelineSRE = require(script.pipeline)
-
 local Scene = require(script.properties.scene)
 local Materials = require(script.properties.materials)
 local Camera = require(script.properties.camera)
+local Screen = require(script.properties.screen)
+local Threads = require(script.properties.threads)
+
+local srePipeline = require(script.pipeline)
+local PixelScreen = require(script.screen)
 
 local sre = {}
 
 function sre:Render()
-    local pixels = PipelineSRE.Render(self.scene, self.materials, self.camera)
-
-    local origin = workspace.CurrentCamera.CFrame.Position + Vector3.new(0, 0, 10)
-    local size = 0.01
-    local screen = Instance.new("Model")
-    for x, cols in pixels do
-        for y, colour in cols do
-            local pixel = Instance.new("Part")
-            pixel.Size = Vector3.one * size
-            pixel.Position = origin + Vector3.new((#pixels - (x-1)) * size, (y-1) * size)
-            pixel.Color = Color3.new(colour.X, colour.Y, colour.Z)
-            pixel.Anchored = true
-            pixel.CanCollide = false
-            pixel.Parent = screen
-        end
-    end
-    screen.Parent = workspace
+    local pixelScreen = PixelScreen.new(self.properties.screen, self.properties.camera.size, self.properties.screen.name)
+    srePipeline.Render(self.properties, function(pixel)
+        --[[
+        for _, pixel in heightBuffer do
+            pixelScreen:DrawPixel(pixel[1][1], pixel[1][2], pixel[2], true, 0, 1)
+        end]]--
+        pixelScreen:DrawPixel(pixel[1][1], pixel[1][2], pixel[2], true, 0, 1)
+    end)
 end
 
 
-local function new(scene, materials, camera, screen)
+local function new(camera, scene, materials, screen, threads)
     local self = {}
-    self.scene = scene
-    self.materials = materials
-    self.camera = camera
-    self.screen = screen
+    self.properties = {}
+    self.properties.camera = camera
+    self.properties.threads = threads or Threads.new()
+    self.properties.scene = scene or Screen.new()
+    self.properties.materials = materials or Materials.new():AddMaterial(Materials.material.new("None"))
+    self.properties.screen = screen or Screen.new()
 
     setmetatable(self, {
         __index = sre
@@ -44,5 +40,7 @@ return setmetatable({
     new = new,
     Scene = Scene,
     Camera = Camera,
-    Materials = Materials
+    Materials = Materials,
+    Screen = Screen,
+    Threads = Threads
 }, {})

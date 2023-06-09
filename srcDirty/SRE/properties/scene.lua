@@ -20,6 +20,7 @@ local function new(properties)
         end
         self.sceneProperties[property] = value
     end
+    print(self.sceneProperties)
     setmetatable(self, {
         __index = scene
     })

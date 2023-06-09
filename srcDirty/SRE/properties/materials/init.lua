@@ -6,8 +6,8 @@ function materials:DumpMaterials()
     return self.materials
 end
 
-function materials:AddMaterial(materialObj)
-    self.materials[materialObj.name] = materialObj
+function materials:AddMaterial(material)
+    self.materials[material.name] = material
 end
 
 local function new()
