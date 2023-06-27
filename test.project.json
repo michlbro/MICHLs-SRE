@@ -1,0 +1,36 @@
+{
+    "name": "MCHLs-SRE",
+    "tree": {
+        "$className": "DataModel",
+
+        "Workspace": {
+            "$path": "test/Scene.rbxmx"
+        },
+
+        "StarterPlayer": {
+            "StarterPlayerScripts": {
+                "MCHLs-SRE": {
+                    "$path": "test/client",
+                    "Properties": {
+                        "$path": "test/properties"
+                    },
+                    "SRE" : {
+                        "$path": "src"
+                    }
+                }
+            }
+        },
+
+        "ServerScriptService": {
+            "MCHLs-SRE": {
+                "$path": "test/client",
+                "Properties": {
+                    "$path": "test/properties"
+                },
+                "SRE" : {
+                    "$path": "src"
+                }
+            }
+        }
+    }
+}

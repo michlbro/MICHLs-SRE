@@ -1,12 +1,6 @@
 {
-    "name": "MICHLs-Rendering-System",
+    "name": "MCHLs-SRE",
     "tree": {
-        "$className": "DataModel",
-        "Workspace": {
-            "SRE":{
-                "$className": "Model",
-                "$path": "src"
-            }
-        }
+        "$path": "src"
     }
 }

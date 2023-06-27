@@ -1,0 +1,1 @@
+local properties = require(script.Properties)
