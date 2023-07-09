@@ -1,6 +1,9 @@
 local colour = {}
 
-function colour.New(r, g, b)
+--[[
+    Colour constructor, arguments optional. Default: 0
+]]
+function colour.new(r, g, b)
     return {r or 0, g or 0, b or 0}
 end
 

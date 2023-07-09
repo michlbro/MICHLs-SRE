@@ -1,3 +1,6 @@
+local util = script.Parent.Util
+local Colour = require(util.Colour)
+
 local Class = {}
 
 -- SRE
@@ -15,32 +18,73 @@ function sre.new(scene, materials, camera, thread)
 
     self.screen = {}
 
+    self.colourBuffer = {}
+
     setmetatable(self, sre)
     return self
+end
+
+local function PreAllocateBuffer(index, ...)
+    for _, buffer in {...} do
+        buffer[index] = {}
+    end
 end
 
 function sre:Render()
     local camera = {}
     do  
         local cameraObj = self.camera
+        camera.imageSize = cameraObj.imageSize
         local imageAspectRatio = camera.imageSize.X / camera.imageSize.Y
         camera.aspectRatio = imageAspectRatio
-        camera.imageSize = cameraObj.imageSize
         camera.fov = math.rad(cameraObj.fov)
         camera.cframe = cameraObj.cframe
         camera.worldOrigin = Vector3.zero
     end
 
+    local cameraProjectionBuffer = {}
+    local reflectBuffer = {}
+
     for x = 0, camera.imageSize.X do
+        PreAllocateBuffer(x, cameraProjectionBuffer, self.colourBuffer, reflectBuffer)
         for y = 0, camera.imageSize.Y do
+            PreAllocateBuffer(y, cameraProjectionBuffer[x], self.colourBuffer[x], reflectBuffer[x])
+            
             local u = (2 * ((x + 0.5) / camera.imageSize.X) - 1) * math.tan(camera.fov / 2 * math.pi / 180) * camera.aspectRatio
             local v = (1 - 2 * ((y + 0.5) / camera.imageSize.Y)) * math.tan(camera.fov / 2 * math.pi / 180)
             local worldOrigin = camera.worldOrigin * camera.cframe
             local rayPosition = Vector3.new(u, v, -1) * camera.cframe
             
             local rayDirection = (rayPosition - worldOrigin).Unit
+
+            cameraProjectionBuffer[x][y] = {rayDirection}
+            self.colourBuffer[x][y] = Colour.new()
         end
     end
+
+    -- Reflect
+    --[[ 
+        Weak material referencing to determine reflection direction and light sources.
+    ]]--
+    for x = 0, camera.imageSize.X do
+        --[[
+            Perform raycast reflections via in parallel here for all lines on the Y axis.
+        ]]
+    end
+
+    -- Colour Extract
+    --[[
+        Full material referencing to determine pixel overall colour.
+    ]]--
+    for x = 0, camera.imageSize.X do
+        --[[
+            Perform pixel colour determination via in parallel here for all lines on the Y axis.
+        ]]
+    end
+end
+
+function sre:GetColourBuffer()
+    return self.colourBuffer
 end
 
 -- Scene
@@ -48,7 +92,7 @@ local scene = {}
 scene.__index = scene
 Class.Scene = scene
 
-function scene.new(objects: table?)
+function scene.new(objects)
     local self = {}
 
     self.objects = objects or {}
@@ -134,7 +178,7 @@ local thread = {
     _defaultThreadCount = 10
 }
 thread.__index = thread
-Class.thread = thread
+Class.Thread = thread
 
 function thread.new(threadCount)
     local self = {}
