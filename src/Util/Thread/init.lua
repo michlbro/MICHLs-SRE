@@ -27,8 +27,10 @@ function thread:GiveTask(...)
         local actor = self:_CreateThread(self.setupParams.module, self.setupParams.params)
         self.threads[self.threadCount] = actor
         actor:BindToMessage("Run", ...)
+        return
     end
-    table.insert(self.threadQueue, {...})
+    self:Join()
+    self:GiveTask(...)
 end
 
 function thread:SetupThreads(module, ...)
@@ -39,8 +41,24 @@ function thread:SetupThreads(module, ...)
 end
 
 function thread:Join()
+    if #self.freeThreads > 0 then
+        return
+    end
     local currentThread = coroutine.running()
     table.insert(self.joinThreads, currentThread)
+    coroutine.yield()
+end
+
+function thread:OnThreadFinished(callbackFunc)
+    self.callbackFunc = callbackFunc
+end
+
+function thread:Finished()
+    if #self.freeThreads >= self.threadCount then
+        return
+    end
+    local currentThread = coroutine.running()
+    table.insert(self.finishedThreads, currentThread)
     coroutine.yield()
 end
 
@@ -55,17 +73,20 @@ local function new(threadCount, parent, callbackFunc)
 
     self.threads = {}
     self.freeThreads = {}
-    self.threadQueue = {}
 
     self.joinThreads = {}
+    self.finishedThreads = {}
 
     self.bindableEvent = Instance.new("BindableEvent")
     self.bindableEvent.Parent = self.parent
 
+    self.callbackFunc = callbackFunc
+
     self.bindableEvent.Event:Connect(function(id, results)
-        task.defer(callbackFunc, results)
+        task.defer(self.callbackFunc, results)
         table.insert(self.freeThreads, id)
 
+        --[[
         if #self.threadQueue > 0 then
             local taskParam = table.remove(self.threadQueue, 1)
             local actorId = table.remove(self.freeThreads, 1)
@@ -74,6 +95,16 @@ local function new(threadCount, parent, callbackFunc)
         else
             for _, joinThread in self.joinThreads do
                 task.defer(joinThread)
+            end
+        end]]
+
+        for _, joinThread in self.joinThreads do
+            task.defer(joinThread)
+        end
+
+        if #self.freeThreads >= self.threadCount then
+            for _, finishedThread in self.finishedThreads do
+                task.defer(finishedThread)
             end
         end
     end)

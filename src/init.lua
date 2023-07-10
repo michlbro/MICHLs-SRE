@@ -4,5 +4,6 @@ return {
     screen = require(script.Screen),
 
     -- Util modules
-    Colour = require(script.Util.Colour)
+    Colour = require(script.Util.Colour),
+    Threads = require(script.Util.Thread)
 }
