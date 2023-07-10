@@ -7,7 +7,7 @@ return function(reflectBuffer, MaterialFunc)
         for _, result: RaycastResult in reflections do
             local instance = result.Instance
             local material = MaterialFunc(instance)
-            local instanceColour = Vector3.new(instance.R, instance.G, instance.B)
+            local instanceColour = Vector3.new(material[2].R, material[2].G, material[2].B)
 
             local emittedLight = instanceColour * material.LightIntensity
             incomingLight += (emittedLight * rayColour)

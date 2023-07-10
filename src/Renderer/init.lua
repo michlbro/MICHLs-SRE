@@ -47,7 +47,7 @@ function sre:Render()
 
     local cameraProjectionBuffer = {}
     local reflectBuffer = {}
-    local tempColourBuffer
+    local tempColourBuffer = {}
 
     for x = 0, camera.imageSize.X - 1 do
         PreAllocateBuffer(x, cameraProjectionBuffer, self.colourBuffer, reflectBuffer, tempColourBuffer)
@@ -80,7 +80,7 @@ function sre:Render()
     end
 
     local currentRay = 0
-    for count, self.camera.rays - 1 do
+    for count = 0, self.camera.rays - 1 do
         currentRay += 1
         threads:OnThreadFinished(ReflectionCallback)
 
@@ -121,7 +121,6 @@ function sre:Render()
         end
 
         -- Push recent colour computation to colour buffer to view progress
-        local recentColour = self.tem
         for x = 0, camera.imageSize.X - 1 do
             self.colourBuffer[x] = tempColourBuffer[x][currentRay]
         end
